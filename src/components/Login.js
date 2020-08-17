@@ -1,12 +1,7 @@
 import React from "react";
 import axios from "axios";
-import styled from "styled-components";
 
-const Banner = styled.div`
-  padding: 3rem;
-  color: #fff;
-  background: ${(props) => props.color};
-`;
+import Msg from "./Msg";
 
 function Login() {
   const [state, setState] = React.useState({});
@@ -22,11 +17,7 @@ function Login() {
 
     (async function () {
       try {
-        const json = await axios.post("/test", {
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        });
-        console.log(json)
+        const json = await axios.post("/test", credentials);
 
         if (json.status === 200) {
           setState({ loggedIn: true });
@@ -40,21 +31,21 @@ function Login() {
   }, []);
 
   if (state.error) {
-    return (
-      <div data-testid="error">
-        <Banner color="#ff5252">{state.msg}</Banner>
-        <button onClick={() => setState({})}>clear</button>
-      </div>
-    );
+    return <Msg
+      {...state}
+      testId="error"
+      onClear={() => setState({})}
+      color="#ff5252"
+    />
   }
 
   if (state.loggedIn) {
-    return (
-      <div data-testid="succeed">
-        <Banner color="#5fb49c">successful loggin!!</Banner>
-        <button onClick={() => setState({})}>clear</button>
-      </div>
-    );
+    return <Msg
+      {...state}
+      testId="success"
+      onClear={() => setState({})}
+      color="#5fb49c"
+    />
   }
 
   return (

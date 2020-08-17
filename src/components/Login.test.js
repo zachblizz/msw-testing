@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, wait } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 
 import { server, rest } from "../mock";
 
@@ -20,7 +20,7 @@ function setup() {
 }
 
 it("should show the error when password is not passed", async () => {
-  const { username, submit, getByTestId, debug } = setup();
+  const { username, submit, findByTestId } = setup();
   const event = { target: { value: "jimmy" } };
 
   server.use(rest.post("/test", (req, res, ctx) => {
@@ -45,7 +45,36 @@ it("should show the error when password is not passed", async () => {
     },
   });
 
-  await wait(() => getByTestId("error"));
-  debug();
-  // expect(getByTestId("error")).();
+  await findByTestId("error");
+});
+
+it("should show the error when password is not passed", async () => {
+  const { username, password, submit, findByTestId } = setup();
+  const uevent = { target: { value: "jimmy" } };
+  const pevent = { target: { value: "password" } };
+
+  server.use(rest.post("/test", (_, res, ctx) => {
+    return res(
+      ctx.json({ welcome: "there" })
+    );
+  }));
+
+  fireEvent.change(username, uevent);
+  fireEvent.change(password, pevent);
+  fireEvent.submit(submit, {
+    target: {
+      elements: {
+        namedItem(name) {
+          const items = {
+            username: { value: uevent.target.value },
+            password: { value: pevent.target.value },
+          };
+
+          return items[name];
+        },
+      },
+    },
+  });
+
+  await findByTestId("success");
 });

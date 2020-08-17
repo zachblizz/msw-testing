@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 import "./App.css";
 
@@ -8,23 +9,21 @@ function App() {
   const [state, setState] = React.useState();
   const makeCall = React.useCallback(() => {
     (async function () {
-      const res = await fetch("/test");
-      const json = await res.json();
+      const res = await axios.get("/test");
 
-      setState(json);
+      setState(res.data);
     })();
   }, []);
 
   const makeCall2 = React.useCallback(() => {
     (async function () {
-      const res = await fetch("/test", {
-        method: "POST",
-        body: JSON.stringify({ username: "foo", password: "bar" }),
-        headers: { "Content-Type": "application/json" }
-      });
-      const json = await res.json();
+      try {
+        const res = await axios.post("/test", { username: "foo", password: "bar" });
 
-      console.log(json);
+        console.log(res.data);
+      } catch (err) {
+        console.error(err.toString());
+      }
     })();
   }, []);
 
